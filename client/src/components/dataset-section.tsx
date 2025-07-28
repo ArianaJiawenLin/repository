@@ -117,6 +117,10 @@ export default function DatasetSection({ categoryId }: DatasetSectionProps) {
     return `Updated ${diffInDays} days ago`;
   };
 
+  const isImageFile = (dataset: Dataset) => {
+    return dataset.mimeType?.startsWith('image/') || false;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -145,7 +149,7 @@ export default function DatasetSection({ categoryId }: DatasetSectionProps) {
           <div className="text-center">
             <CloudUpload className="h-8 w-8 text-slate-400 mx-auto mb-2" />
             <p className="text-sm text-slate-600 mb-1">Drop files here or click to upload</p>
-            <p className="text-xs text-slate-400">Supports: .owl, .rdf, .ttl, .json-ld</p>
+            <p className="text-xs text-slate-400">Supports: .owl, .rdf, .ttl, .json-ld, images (.png, .jpg, .gif)</p>
           </div>
         </div>
 
@@ -153,7 +157,7 @@ export default function DatasetSection({ categoryId }: DatasetSectionProps) {
           ref={fileInputRef}
           type="file"
           className="hidden"
-          accept=".owl,.rdf,.ttl,.json-ld,.jsonld"
+          accept=".owl,.rdf,.ttl,.json-ld,.jsonld,.png,.jpg,.jpeg,.gif,.bmp,.webp"
           onChange={(e) => handleFileSelect(e.target.files)}
         />
 
@@ -165,30 +169,45 @@ export default function DatasetSection({ categoryId }: DatasetSectionProps) {
         ) : datasets && datasets.length > 0 ? (
           <div className="space-y-3">
             {datasets.map((dataset) => (
-              <div key={dataset.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <i className="fas fa-file-alt text-slate-400" />
-                  <div>
-                    <p className="text-sm font-medium text-slate-700">{dataset.name}</p>
-                    <p className="text-xs text-slate-500">
-                      {dataset.size} • {formatTimeAgo(dataset.uploadedAt)}
-                    </p>
+              <div key={dataset.id} className="p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <i className={`fas ${isImageFile(dataset) ? 'fa-image' : 'fa-file-alt'} text-slate-400`} />
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">{dataset.name}</p>
+                      <p className="text-xs text-slate-500">
+                        {dataset.size} • {formatTimeAgo(dataset.uploadedAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="ghost" size="sm" className="p-1 h-auto">
+                      <Download className="h-3 w-3" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="p-1 h-auto text-red-500 hover:text-red-700"
+                      onClick={() => deleteMutation.mutate(dataset.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex space-x-2">
-                  <Button variant="ghost" size="sm" className="p-1 h-auto">
-                    <Download className="h-3 w-3" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="p-1 h-auto text-red-500 hover:text-red-700"
-                    onClick={() => deleteMutation.mutate(dataset.id)}
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
+                {isImageFile(dataset) && (
+                  <div className="mt-3 border rounded-lg overflow-hidden bg-white">
+                    <img 
+                      src={`/api/datasets/${dataset.id}/file`}
+                      alt={dataset.name}
+                      className="w-full max-h-48 object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>

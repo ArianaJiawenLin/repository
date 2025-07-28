@@ -75,6 +75,8 @@ export class MemStorage implements IStorage {
       name: "screen_elements.owl",
       filename: "screen_elements.owl",
       size: "2.4 MB",
+      mimeType: "application/rdf+xml",
+      fileContent: null,
       uploadedAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
     };
     
@@ -84,7 +86,35 @@ export class MemStorage implements IStorage {
       name: "ui_components.rdf",
       filename: "ui_components.rdf",
       size: "1.8 MB",
+      mimeType: "application/rdf+xml",
+      fileContent: null,
       uploadedAt: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
+    };
+
+    // Sample image datasets for Screen Description
+    const sampleImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAABYSURBVHhe7dMxAQAACAMgtX+KJ3AiSzDQu5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ub+1YDLvQBSWZvLQAAAABJRU5ErkJggg==";
+    const screenImageDataset: Dataset = {
+      id: randomUUID(),
+      categoryId: screenDescId,
+      name: "sample_screen.png",
+      filename: "sample_screen.png",
+      size: "0.2 KB",
+      mimeType: "image/png",
+      fileContent: sampleImageBase64,
+      uploadedAt: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
+    };
+
+    // Another sample image - green rectangle
+    const greenImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAA8SURBVHhe7dMxAQAACAMgtX+KJ3AiSzDQu5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ub+1YDLvQBSWZvLQAAAABJRU5ErkJggg==";
+    const screenImageDataset2: Dataset = {
+      id: randomUUID(),
+      categoryId: screenDescId,
+      name: "ui_mockup.png",
+      filename: "ui_mockup.png", 
+      size: "0.2 KB",
+      mimeType: "image/png",
+      fileContent: greenImageBase64,
+      uploadedAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
     };
 
     const robotDataset1: Dataset = {
@@ -93,6 +123,8 @@ export class MemStorage implements IStorage {
       name: "robot_actions.owl",
       filename: "robot_actions.owl",
       size: "3.2 MB",
+      mimeType: "application/rdf+xml",
+      fileContent: null,
       uploadedAt: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
     };
 
@@ -102,11 +134,15 @@ export class MemStorage implements IStorage {
       name: "environment_model.rdf",
       filename: "environment_model.rdf",
       size: "5.1 MB",
+      mimeType: "application/rdf+xml",
+      fileContent: null,
       uploadedAt: new Date(Date.now() - 6 * 60 * 60 * 1000) // 6 hours ago
     };
 
     this.datasets.set(screenDataset1.id, screenDataset1);
     this.datasets.set(screenDataset2.id, screenDataset2);
+    this.datasets.set(screenImageDataset.id, screenImageDataset);
+    this.datasets.set(screenImageDataset2.id, screenImageDataset2);
     this.datasets.set(robotDataset1.id, robotDataset1);
     this.datasets.set(robotDataset2.id, robotDataset2);
 
