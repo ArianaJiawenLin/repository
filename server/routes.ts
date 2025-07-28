@@ -96,11 +96,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const sizeInMB = (req.file.size / (1024 * 1024)).toFixed(1);
+      
+      // Check if the file is an image
+      const isImage = req.file.mimetype.startsWith('image/');
+      const fileContent = isImage ? req.file.buffer.toString('base64') : null;
+      
       const datasetData = {
         categoryId: req.params.categoryId,
         name: req.file.originalname,
         filename: req.file.originalname,
-        size: `${sizeInMB} MB`
+        size: `${sizeInMB} MB`,
+        mimeType: req.file.mimetype,
+        fileContent: fileContent
       };
 
       const validatedData = insertDatasetSchema.parse(datasetData);
@@ -108,6 +115,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(dataset);
     } catch (error) {
       res.status(400).json({ message: "Failed to upload dataset" });
+    }
+  });
+
+  app.get("/api/datasets/:id/file", async (req, res) => {
+    try {
+      const dataset = await storage.getDataset(req.params.id);
+      if (!dataset) {
+        return res.status(404).json({ message: "Dataset not found" });
+      }
+      
+      if (!dataset.fileContent || !dataset.mimeType) {
+        return res.status(404).json({ message: "File content not available" });
+      }
+      
+      // Convert base64 back to buffer
+      const fileBuffer = Buffer.from(dataset.fileContent, 'base64');
+      
+      res.setHeader('Content-Type', dataset.mimeType);
+      res.setHeader('Content-Disposition', `inline; filename="${dataset.filename}"`);
+      res.send(fileBuffer);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to serve file" });
     }
   });
 

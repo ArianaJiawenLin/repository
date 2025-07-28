@@ -22,6 +22,8 @@ export const datasets = pgTable("datasets", {
   name: text("name").notNull(),
   filename: text("filename").notNull(),
   size: text("size").notNull(),
+  mimeType: text("mime_type"),
+  fileContent: text("file_content"), // Base64 encoded file content for images
   uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
 });
 
